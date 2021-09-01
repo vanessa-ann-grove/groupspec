@@ -19,14 +19,14 @@ visualisation_only = 1; %0 if running statistics %EDIT
 if analysis_type == 1
 
 % Title of analysis (to be displayed on figures)
-fig_title = 'Pain (n = 26) v. HC (n = 14) Baseline';
+fig_title = 'FMS (n = 23) v. HC (n = 14) Baseline';
 
 % Data to be compared
 dataset1 = 'APPENDED_Pain'; %EDIT
 dataset2 = 'APPENDED_ctl'; %EDIT
 existing_var = 'FMSvHC_baseline'; %EDIT
 Exp = [3,3]; %EDIT
-stats_title = {'Pain:HC baseline stats'};
+stats_title = {'FMS:HC baseline stats'};
 
 Comparison_Type = 1; %EDIT: (1 = baseline, 2 = post-VR) 
 
@@ -336,7 +336,7 @@ sigData2 = gp_compare(datai).scalpsig';
         preData = gp_compare(d1).bandpow;
         postData = gp_compare(d2).bandpow;
         data2plot = postData - preData;
-        load('fft_data_V2.mat')
+        load([path1 'VIPA Study\EEG Data\MATLAB\E' num2str(Exp(i)) '_fft_data\fft_data_V2.mat'])
         chaninfo = fft_data(1).chaninfo;
         clear fft_data
         
