@@ -6,20 +6,30 @@
 % electrophysiogical data between groups.
 %
 % To use code: For UEA analysis- Edit section 1a of code according to 
-% analysis being run. For UEA:UoL analysis- Comment out section 1 and run
-% section 2 of code (do not edit). 
+% analysis being run. For UEA:UoL analysis- specify 'UoL' as analysis_type
+% variable and run code as is. If just looking for result visualisation,
+% set visualisation_only variable to '1'. 
 %
-%% Section 1a: Data Parameters- UEA Analysis
-% 
+%% Specify Type of Analysis
+
+analysis_type = 'UEA'; %'UoL'; %EDIT
+visualisation_only = 0; %0 if running statistics %EDIT
+    
+%% Section 1a: Data Parameters- UEA Analysis 
+if analysis_type == 'UEA'
+
 % Title of analysis (to be displayed on figures)
-fig_title = 'FMS (n = 19) v. HC (n = 14)';
+fig_title = 'Pain (n = 26) v. HC (n = 14) Baseline';
 
 % Data to be compared
-dataset1 = 'APPENDED_FMS'; %EDIT
+dataset1 = 'APPENDED_Pain'; %EDIT
 dataset2 = 'APPENDED_ctl'; %EDIT
-stats_title = {'FMS:HC Statistics'};
+existing_var = 'PainvHC'; %EDIT
+Exp = [3,3]; %EDIT
+stats_title = {'Pain:HC baseline stats'};
 
 Comparison_Type = 1; %EDIT: (1 = baseline, 2 = post-VR) 
+
 
 % Statistics Parameters
 d1 = 1; % Baseline dataset (default = 1)
@@ -27,51 +37,67 @@ d2 = 2;
 s1 = 3; % Number of row in gp_compare for statistics
 test_stat = 'Mann Whitney U/ Rank Sum';
 uncorrected_pval = .05;
-critical_pval = uncorrected_pval; %/ 7; %Bonferonni correction for 7 freq bands
+critical_pval = uncorrected_pval; %/ 7; 
 N = 5000;
 
-%Specify output location
+%Locate appropriate MATLAB Path
+testpath = 'S:\\';
+if exist([testpath 'VIPA Study\EEG Data\MATLAB\\experiment_ids_order.mat'], 'file')
+    path1 = testpath;
+else
+    path1 = '\\ueahome\CfE-Research\\';
+end
+
+%Specify output location or reload existing gp_compare variable
+if visualisation_only == 0
 gp_compare = struct([]);
 gp_compare(d1).id = dataset1;
 gp_compare(d2).id = dataset2;  
-gp_compare(s1).id = stats_id;
+gp_compare(s1).id = stats_title;
 gp_compare(s1).Test_Stat = test_stat;
 gp_compare(s1).Critical_Pval = critical_pval;
 gp_compare(s1).Npermutes = N;
+else if visualisation_only == 1
+    load([path1 'VIPA Study\EEG Data\MATLAB\gp_compare\gp_compare_', existing_var, '.mat']);
+    end
+end
 
 
 %% Section 1b: Data Setup
-
-if Comparison_Type == 1
-    a = 1;
-else if Comparison_Type == 2
-        a = 6;
-    end
-end
 
 %Load desired data and store power values in dB
 all_data = {dataset1, dataset2};
 
 for i = 1:length(all_data)
-    dataload = ['fft_data_' cell2mat(all_data(i)) '.mat'];
+    path2 = [path1 'VIPA Study\EEG Data\MATLAB\E' num2str(Exp(i)) '_fft_data\'];
+    dataload = [path2 'fft_data_' cell2mat(all_data(i)) '.mat'];
     load(dataload)
     
     freq_bounds = dsearchn(fft_data(1).frex, [2 45]');
     gp_compare(1).frex = fft_data(1).frex(freq_bounds(1):freq_bounds(2));
     
+    if Comparison_Type == 1 
+        a = 1;
+    else if Comparison_Type == 2 && Exp(i) == 3
+            a = 6;
+        else if Comparison_Type == 2 && Exp(i) == 2
+                a = 4;
+            end
+        end
+    end
+    
+    a = Comparison_Type(i);
     powvals = fft_data(a).allpower; 
     gp_compare(i).powvals = powvals(:,freq_bounds(1):freq_bounds(2));
     gp_compare(i).scalpavg = fft_data(a).scalpavg;
     gp_compare(i).scalppow = mean(gp_compare(i).powvals,1);
 end
-%}
 
 %% Section 2: Data Parameters (UoL analysis)
-%{
 
 %{
-%% DO NOT UNCOMMENT!%%
-data_title = {'FMS (UEA)', 'HC (UEA)', 'FMS (UoL)', 'HC (UoL)'}; 
+%% DO NOT UNCOMMENT! %%
+data_title = {'UEA FMS', 'UEA HC', 'UoL FMS', 'UoL HC'}; 
 stats_title = {'UEA FMS:HC', 'UoL FMS:HC', 'FMS UEA:UoL' 'HC UEA:UoL'};
 test_stat = 'Mann Whitney U/ Rank Sum';
 uncorrected_pval = .05;
@@ -105,24 +131,26 @@ for i = 1:length(data_title)
        gp_compare(i).scalppow = mean(gp_compare(i).powvals,1);
         end
     end
+end
 %}
-
+else if analysis_type == 'UoL'
 load('UEA_UoL_gp_compare.mat')
 baseline_data = [1 3 1 2 1 3];
 compare_data = [2 4 3 4 4 2];
 test_stat = 'Mann Whitney U/ Rank Sum';
 uncorrected_pval = .05;
-critical_pval = uncorrected_pval; %/ 7; %Bonferonni correction for 7 freq bands
+critical_pval = uncorrected_pval; %/ 7;
 N = 5000;
 stats_title = {'UEA FMS:HC', 'UoL FMS:HC', 'FMS UEA:UoL' 'HC UEA:UoL' 'UEA FMS:UoL HC' 'UoL FMS:UEA HC'};
-%}
+    end
+end
 
 %% Section 3: Statistics
 
-for i = 1%:length(stats_title)
+for i = 1:length(stats_title)
 %Frequency band boundries
 hz = gp_compare(1).frex;
-freq_bounds = dsearchn(hz, [2 4 8 12 16 23 30 45]');
+freq_bounds = dsearchn(hz, [2 4 8 12 16 23 30 40]');
  if exist('baseline_data', 'var') 
     d1 = baseline_data(i);
     d2 = compare_data(i);
@@ -130,6 +158,8 @@ freq_bounds = dsearchn(hz, [2 4 8 12 16 23 30 45]');
  end
  
 %Data
+if visualisation_only == 0
+    disp('Running scalp statistics........')
 preInt = gp_compare(d1).powvals; 
 postInt = gp_compare(d2).powvals;
 ncmp = size(preInt,1); %number of channels
@@ -140,7 +170,7 @@ gp_compare(s1).Npermutes = N;
 
 for k=2:length(freq_bounds)
 
-%% Section 3a: Statistical Analysis (Whole Scalp, Frequency Bands)
+%% Section 4: Statistical Analysis (Whole Scalp, Frequency Bands)
         %Step 1: Select data from freq band
         preData  = preInt(:,freq_bounds(k-1):freq_bounds(k));
             n1 = size(preData,2);
@@ -177,7 +207,7 @@ for k=2:length(freq_bounds)
         trialsig = pval  < critical_pval;
         gp_compare(s1).scalpsig(k-1) = trialsig; 
 
-%% Section 3b: Statistical Analysis (Single channel: concatenated data)
+%% Section 5: Statistical Analysis (Single channel: concatenated data)
 % Only to be performed if freq band is significant at scalp level
 trialsig = gp_compare(s1).scalpsig(k-1);
 if trialsig == 0
@@ -187,6 +217,7 @@ if trialsig == 0
         gp_compare(s1).sigdif(k-1,:) = zeros(1,ncmp);
         
 else if trialsig == 1
+        disp('Significant difference found at scalp level! Running channel statistics......')
         % Step 7: Compute true test statistic 
             %Sign Rank Test for independent samples
             for chani = 1:ncmp
@@ -221,12 +252,13 @@ end
 
 gp_compare(d1).scalpstat = mean(gp_compare(d1).bandpow,2);
 gp_compare(d2).scalpstat = mean(gp_compare(d2).bandpow,2);
+end
 
-%% Section 4: Visualisation- Spectrum and Bar Graph of Scalp Power, Significant Channels
-%
+%% Section 6: Visualisation- Spectrum and Bar Graph of Scalp Power, Significant Channels
+
 figure(i),clf
 labs = {'Delta (2-4 Hz)' 'Theta (4-8 Hz)' 'Alpha (8-12 Hz)'...
-    'Beta 1 (12-16 Hz)' 'Beta 2 (16-23 Hz)' 'Beta 3 (23-30 Hz)' 'Gamma (30-45 Hz)'};
+    'Beta 1 (12-16 Hz)' 'Beta 2 (16-23 Hz)' 'Beta 3 (23-30 Hz)' 'Gamma (30-40 Hz)'};
 leg = {gp_compare(d1).id, gp_compare(d2).id};
 
 subplot(312)
@@ -252,8 +284,8 @@ hold on
 freq_bounds = dsearchn(gp_compare(1).frex, [2 45]');
 frex = gp_compare(1).frex(freq_bounds(1):freq_bounds(2));
 subplot(313)
-for i = [d1,d2]
-    spectra = mean(gp_compare(i).powvals,1);
+for l = [d1,d2]
+    spectra = mean(gp_compare(l).powvals,1);
     p = plot(frex,spectra);
        p.LineWidth = 1.5;
     hold on
@@ -272,7 +304,7 @@ hold on
 
 %% Significant Channel Visualisation
 
-figtitle = ['Group Differences By Channel'];
+figtitle = 'Group Differences By Channel';
 % Define Colour Limits
 min_max = zeros(2,7);
 for freqi = 1:7
@@ -326,4 +358,23 @@ sigData2 = gp_compare(datai).scalpsig';
     end
 set(gcf, 'name', cell2mat(stats_title(i)))
 
+%% Print Results for User View
+
+freq_bands = {'Delta band' 'Theta band' 'Alpha band' 'Beta1 band'...
+    'Beta2 band' 'Beta3 band' 'Gamma band'};
+
+disp([char(leg(1)) ' v. ' char(leg(2)) ' analysis complete!'])
+all_sig = gp_compare(s1).scalpsig;
+
+if any(all_sig,'all')
+    disp('Significant Results Observed:')
+    for f = 1:length(freq_bands)
+       if all_sig(f) == 1 
+           disp([char(freq_bands(f)) ' is significantly different!'])
+       end
+    end
+else 
+   disp('No significant results observed')
+    end
 end
+disp('All Analyses Complete. Dont forget to save gp_compare variable!!!!')
