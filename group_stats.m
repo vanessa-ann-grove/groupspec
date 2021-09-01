@@ -86,7 +86,6 @@ for i = 1:length(all_data)
         end
     end
     
-    a = Comparison_Type(i);
     powvals = fft_data(a).allpower; 
     gp_compare(i).powvals = powvals(:,freq_bounds(1):freq_bounds(2));
     gp_compare(i).scalpavg = fft_data(a).scalpavg;
