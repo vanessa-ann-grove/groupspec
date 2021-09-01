@@ -2,55 +2,40 @@ This code is specific to data collected for the VIPA Study at the University of 
 Written by Vanessa Grove (MSc)
 
 Purpose of code: To run spectral analysis on resting state EEG data and compare data during/following use of Virtual Reality technology to a baseline dataset. Main analysis occurs using data averaged across the whole scalp in seven frequency bands. If the power in a frequency band is found to be significantly different to the baseline dataset, a supplementary analysis will run which will analyse each of the 64 channels individually to examine which channels/groups of channels are demonstrating differences. The results of this code can be visualised in the visualisation code, which is in a separate file. 
-Purpose of code: To compare sprectral EEG data between groups/individuals. Just as in the static spectral analysis, the main analysis occurs using data averaged across the whole scalp in seven frequency bands. If the power in a frequency band is found to be significantly different between the groups, a supplementary analysis will run which will analyse each of the 64 channels individually to examine which channels/groups of channels are demonstrating differences. The results of this code will be visualised in a figure that will be produced when code is run completely. 
+Purpose of code: To compare sprectral EEG data between groups. Just as in the static spectral analysis, the main analysis occurs using data averaged across the whole scalp in seven frequency bands. If the power in a frequency band is found to be significantly different between the groups, a supplementary analysis will run which will analyse each of the 64 channels individually to examine which channels/groups of channels are demonstrating differences. The results of this code will be visualised in a figure that will be produced when code is run completely. 
 
 IMPORTANT- This code can only be run on a device that is connected to the S: drive on a UEA-based server.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Setup: 
-To use this code on new data, user will update the first three lines of code with the appropriate information. This must be done manually before running the code.
 To use this code on new data, user will update the first few lines of code with the appropriate information. This must be done manually before running the code.
 
 IMPORTANT- This code will run on fft_data variables that have been created through running the staticspec.m code NOT on EEG files. Be sure that the data you would like to run has an associated fft_data.mat structure.
 
 Code Structure:
-SECTION 1- Data Parameters
-* ppt_id- ID number of participant or appended dataset. IMPORTANT: this variable must match the processed EEG data file of interest exactly (i.e. if EEG file is called APPENDED_EC_pre, then 'ppt_id' MUST be 'APPENDED').
-* Exp- Number of experiment being analysed (either 2 or 3)
+Specify Type of Analysis
+* analysis_type- will either be '1' for a UEA analysis or '2' for UoL
+* visualisation_only- if you would like to rerun statistics with different parameters, make sure this is set to '0'. If you would just like to produce figures of previously run statistics, set this variable to '1' (default)
+
+SECTION 1a- Data Parameters- UEA Analysis Only
+* fig_title- Give analysis a title to be displayed on figures (e.g. 'FMS v HC baseline'). Be sure to use ''
+* dataset1- ID number of first participant or appended dataset. IMPORTANT: this variable must match the processed EEG data file of interest exactly (i.e. if EEG file is called APPENDED_EC_pre, then 'ppt_id' MUST be 'APPENDED').
+* dataset2- as above.
+* existing_var- If only looking to produce figures, this is the title of the saved gp_compare variable (see Variables file for options)
+* Exp- Number of experiments being analysed (either 2 or 3). IMPORTANT: HC data is located under 3
+* stats_title- name of statistical analysis (e.g. 'FMS:HC baseline stats', similar to fig_title but will be stored in the gp_compare variable_
 * Comparison- Type of comparison of interest (1 = sequential order (default), 2 = condition (i.e. by game or by environment).
 Other information in this section regarding statistical analysis details will get stored in the output variable for future reference. Only update this section if rerunning statistical analysis with new parameters. 
 
- SECTION 2- Data Parameters
- This section will set up the filepath for accessing the EEG files of interest and will use the information provided by the first section to prepare the output variable according to the experiment number and type of comparison being facilitated. 
-
-SECTION 3- Data Load
-This section will load the preprocessed EEG files of interest into an 'ALLEEG' structure.
-
-SECTION 4- EEGLab-based Power Calculations
-*	Output variable 'fft_data' is initialized and set up
-*	Each of the EEG datasets loaded into the 'ALLEEG' variable will be transformed from voltage to power data using a Fourier Transform. This is achieved using the EEGLab command ‘spectopo’. The output of this calculation is a 64 x 126 matrix, which represents the absolute power (in decibels, average over all epochs) at each frequency 0-125 Hz for each of the 64 channels. This is stored in the output variable under 'fft_data(n).allpower' where n = 1:6 for experiment 3 or n = 1:4 for experiment 2.
-*	The data from this matrix is then grouped into the desired frequency bands. Absolute power for each frequency band is calculated by averaging the power value of each of the frequencies within the range of each band. This number is then converted to microvolts and stored in 'fft_data(n).powavg'.
-*	Finally, the microvolt data is averaged across all 64 channels to create a single scalp value. This is stored in 'fft_data(n).scalpavg'.
-
-SECTION 5- Statistics Setup
-This section of code prepares the output variable to store the results of the statistical analysis. The ‘for’ loop that begins in this section cycles through a comparison of the baseline dataset to all of the following datasets (i.e. baseline:G1, baseline:G2… baseline:post-intervention).
-
-SECTION 6- Whole-Scalp Analysis
-SECTION 1a- Data Parameters: UEA Analysis
-* fig_title- Give the analysis a title for display purposes (i.e. FMS Patients vs. Controls)
-* dataset1 & dataset2: ID number of participants or appended datasets you wish to compare. IMPORTANT: this variable must match the processed EEG data file of interest exactly (i.e. if data file is called fft_data_APPENDED_ctl, then 'ppt_id' MUST be 'APPENDED_ctl').
-* Comparison_Type: For VIPA data, you can compare the data at any resting state dataset within each experiment. Default '1' for baseline data (i.e. pre-VR).
-The rest of this section does not need to be edited and is there to set up the output variable with the appropriate information and structure.
-
-SECTION 1b- Data Setup
+ SECTION 1b- Data Setup- UEA Analysis Only
 Loads in appropriate spectral data from the fft_data files entered into the first section of code:
 * 'gp_compare.powvals' = spectral power in dB for each channel at 1 Hz resolution from 2-45 Hz
 * 'gp_compare.scalpavg' = average spectral power in each frequency band across the scalp in microvolts
 * 'gp_compare.scalppow' = average scalp spectral power at 1 Hz resolution from 2-45 Hz
 
-SECTION 2- UoL Analysis
-IMPORTANT: Section should only be uncommented if running a UEA:UoL analysis. If section is uncommented, then it is important to comment out sections 1a/b.
+SECTION 2- Data Parameters- UoL Anlaysis Only
+This section will load existing UoL gp_compare variable with UEA and UoL data stored for analysis and/or visualisation
 
 SECTION 3- Statistics Setup
 This section of code prepares the output variable ('gp_compare') to store the results of the statistical analysis.
@@ -68,7 +53,6 @@ SECTION 4- Whole-Scalp Analysis
 * The data is permuted by shuffling the data points randomly between the two datasets 5000 times and performing a Mann Whitney U/Rank Sum test for each permute. The output of this step is a 1 x 5000 matrix in which each entry corresponds to a p-value for the shuffled data.
 * A final p-value for the permutation testing is calculated by summing the number of times permuted test statistic values were less than the true test statistic, divided by the total number of permutes: (∑(permuted statistic < test statistic)/N). This value is stored in decimal form in 'gp_compare.scalppvals'. Additionally, if the p-value is less than the Bonferroni-corrected critical value, this information is stored as a ‘1’ in 'gp_compare.scalpsig' and if the value is greater than the critical p-value, it is stored as a ‘0’.
 
-SECTION 7- Single Channel Analysis
 SECTION 5- Single Channel Analysis
 Note: This section is only performed if the result of the whole-scalp data is significant.
 *	The relevant value from 'fft_data.scalpsig' is evaluated. If the value is ‘0’, this section is skipped.
