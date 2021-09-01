@@ -12,11 +12,11 @@
 %
 %% Specify Type of Analysis
 
-analysis_type = 'UEA'; %'UoL'; %EDIT
-visualisation_only = 0; %0 if running statistics %EDIT
+analysis_type = 1; %1 = UEA, 2 = UoL; %EDIT
+visualisation_only = 1; %0 if running statistics %EDIT
     
 %% Section 1a: Data Parameters- UEA Analysis 
-if analysis_type == 'UEA'
+if analysis_type == 1
 
 % Title of analysis (to be displayed on figures)
 fig_title = 'Pain (n = 26) v. HC (n = 14) Baseline';
@@ -24,7 +24,7 @@ fig_title = 'Pain (n = 26) v. HC (n = 14) Baseline';
 % Data to be compared
 dataset1 = 'APPENDED_Pain'; %EDIT
 dataset2 = 'APPENDED_ctl'; %EDIT
-existing_var = 'PainvHC'; %EDIT
+existing_var = 'FMSvHC_baseline'; %EDIT
 Exp = [3,3]; %EDIT
 stats_title = {'Pain:HC baseline stats'};
 
@@ -66,6 +66,7 @@ end
 %% Section 1b: Data Setup
 
 %Load desired data and store power values in dB
+if visualisation_only == 0
 all_data = {dataset1, dataset2};
 
 for i = 1:length(all_data)
@@ -90,6 +91,7 @@ for i = 1:length(all_data)
     gp_compare(i).powvals = powvals(:,freq_bounds(1):freq_bounds(2));
     gp_compare(i).scalpavg = fft_data(a).scalpavg;
     gp_compare(i).scalppow = mean(gp_compare(i).powvals,1);
+end
 end
 
 %% Section 2: Data Parameters (UoL analysis)
@@ -132,8 +134,16 @@ for i = 1:length(data_title)
     end
 end
 %}
-else if analysis_type == 'UoL'
-load('UEA_UoL_gp_compare.mat')
+else if analysis_type == 2
+
+testpath = 'S:\\';
+if exist([testpath 'VIPA Study\EEG Data\MATLAB\\experiment_ids_order.mat'], 'file')
+    path1 = testpath;
+else
+    path1 = '\\ueahome\CfE-Research\\';
+end
+
+load([path1 'VIPA Study\EEG Data\MATLAB\gp_compare\gp_compare_UoL.mat'])
 baseline_data = [1 3 1 2 1 3];
 compare_data = [2 4 3 4 4 2];
 test_stat = 'Mann Whitney U/ Rank Sum';
@@ -326,7 +336,7 @@ sigData2 = gp_compare(datai).scalpsig';
         preData = gp_compare(d1).bandpow;
         postData = gp_compare(d2).bandpow;
         data2plot = postData - preData;
-        load([path1 'VIPA Study\EEG Data\MATLAB\E' num2str(Exp(i)) '_fft_data\fft_data_V2.mat'])
+        load('fft_data_V2.mat')
         chaninfo = fft_data(1).chaninfo;
         clear fft_data
         
