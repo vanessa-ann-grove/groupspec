@@ -27,15 +27,15 @@ SECTION B- If user is looking to visualise results from a previously run compari
 
 FMS Cohort
 'FMSvHC_baseline_e3' 'FMSvHC_baseline_e2' 
-'FMSvHC_G1' 'FMSvHC_E1'
-'FMSvHC_G2' 'FMSvHC_E2'
+'FMSvHC_G1' 
+'FMSvHC_G2'
 'FMSvHC_G3'
 'FMSvHC_G4'
-'FMSvHC_post_e3' 'FMSvHC_post_e2'
+'FMSvHC_post_e3'
 
 Pain Cohort
 'PainvHC_baseline_e3' 'PainvHC_baseline_e2'
-'PainvHC_post_e3'  'PainvHC_post_e3'
+'PainvHC_post_e3'
 
 UoL Data
 'combinedFMSvHC' = combined UEA+UoL FMS group and HC group
