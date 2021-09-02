@@ -1,0 +1,43 @@
+Helpful index to understand input options for 'dataset1' & 'dataset2' variable or 'existing_var' variable in analysis code. 
+Enter variable names EXACTLY as appears on this code (copy&paste if having trouble)
+
+SECTION A- If running statistics (visualisation_only = 0), user will need to update variables 'dataset1' and 'dataset2' in
+first section of code according to desired comparison
+
+Appended Datasets
+  VIPA Experiment 3: 'APPENDED_FMS' 'APPENDED_FMS_cond' 'APPENDED_Pain' 'APPENDED_Pain_cond'
+  RIVET Experiment 2*: 'APPENDED_ctl' 'APPENDED_ctl_cond' 
+  VIPA Experiment 2: 'APPENDED_FMS' 'APPENDED_FMS_cond' 'APPENDED_Pain' 'APPENDED_Pain_cond'
+  *IMPORTANT: Control datasets are located under experiment 3 folder, therefore 'Exp' variable will need to be changed to 3
+    to represent this
+  Note: '_pain' = all VIPA participants (FMS+TKR)
+      '_FMS' = FMS participants only
+      '_ctl' = RIVET participants (control)
+      '_cond' = condition (i.e. games or environment)
+    
+Individual Datasets
+  VIPA Experiment 3: 'V1' 'V2' 'V3' 'V4' 'V5' 'V6' 'V7' 'V8' 'V9' 'V10' 'V11' 'V12' 'V13' 'V14' 'V15' 'V16' 'V17'     
+      'V21' 'V23' 'V24' 'V27' 'V28' 'V29' 'V32' 'V34' 'V35'
+  RIVET Experiment 2: 'R3' 'R6' 'R8' 'R9' 'R10' 'R12' 'R14' 'R15' 'R17' 'R19' 'R24' 'R26' 'R27' 'R30'
+  VIPA Experiment 2: 'V1' 'V5' 'V6' 'V7' 'V8' 'V9' 'V10' 'V11' 'V12' 'V13' 'V14' 'V15' 'V16' 'V21' 'V23' 'V27
+      'V28' 'V34' 'V35'
+      
+SECTION B- If user is looking to visualise results from a previously run comparison (visualisation_only = 1), the variable
+'existing_var' will need to be updated according to an existing 'gp_compare.mat' variable
+
+FMS Cohort
+'FMSvHC_baseline_e3' 'FMSvHC_baseline_e2' 
+'FMSvHC_G1' 'FMSvHC_E1'
+'FMSvHC_G2' 'FMSvHC_E2'
+'FMSvHC_G3'
+'FMSvHC_G4'
+'FMSvHC_post_e3' 'FMSvHC_post_e2'
+
+Pain Cohort
+'PainvHC_baseline_e3' 'PainvHC_baseline_e2'
+'PainvHC_post_e3'  'PainvHC_post_e3'
+
+UoL Data
+'combinedFMSvHC' = combined UEA+UoL FMS group and HC group
+'UoL' = file containing UoL FMS and HC group data as well as UEA FMS and HC data (will be called when 'analysis_type' = 2)
+
