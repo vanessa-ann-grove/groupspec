@@ -336,7 +336,7 @@ sigData2 = gp_compare(datai).scalpsig';
         preData = gp_compare(d1).bandpow;
         postData = gp_compare(d2).bandpow;
         data2plot = postData - preData;
-        load([path1 'VIPA Study\EEG Data\MATLAB\E' num2str(Exp(i)) '_fft_data\fft_data_V2.mat'])
+        load([path1 'VIPA Study\EEG Data\MATLAB\E' num2str(Exp(i)) '_fft_data\fft_data_V1.mat'])
         chaninfo = fft_data(1).chaninfo;
         clear fft_data
         
